@@ -25,10 +25,11 @@ import Projects from './components/Projects';
 import Settings from './components/Settings';
 import Profile from './components/Profile';
 import Support from './components/Support';
+import EmailConfirmed from './components/EmailConfirmed';
 
 const getPathRoute = () => {
   const path = window.location.pathname.replace(/^\/|\/$/g, '');
-  const validRoutes = ['signin', 'signup', 'dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
+  const validRoutes = ['signin', 'signup', 'dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support', 'email-confirmed'];
   return validRoutes.includes(path) ? path : '';
 };
 
@@ -283,6 +284,8 @@ export default function App() {
         const pathRoute = getPathRoute();
         if (pathRoute === 'signup') {
           setCurrentRoute('signup');
+        } else if (pathRoute === 'email-confirmed') {
+          setCurrentRoute('email-confirmed');
         } else {
           setCurrentRoute('signin');
         }
@@ -323,6 +326,8 @@ export default function App() {
       } else {
         if (pathRoute === 'signup') {
           setCurrentRoute('signup');
+        } else if (pathRoute === 'email-confirmed') {
+          setCurrentRoute('email-confirmed');
         } else {
           setCurrentRoute('signin');
         }
@@ -561,6 +566,9 @@ export default function App() {
   if (!isLoggedIn) {
     if (currentRoute === 'signup') {
       return <SignUp onRegister={handleRegister} onNavigate={setCurrentRoute} />;
+    }
+    if (currentRoute === 'email-confirmed') {
+      return <EmailConfirmed onNavigate={setCurrentRoute} />;
     }
     return <SignIn onLogin={handleLogin} onNavigate={setCurrentRoute} />;
   }
