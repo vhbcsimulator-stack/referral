@@ -243,6 +243,18 @@ export default function App() {
 
   // Helper function to check user verification and manage login session
   const checkVerificationAndLogin = async (session, event) => {
+    // If the user is on /email-confirmed, never redirect away — just clear state and stay.
+    const currentPath = getPathRoute();
+    if (currentPath === 'email-confirmed') {
+      setIsLoggedIn(false);
+      setUserId(null);
+      setUserName('');
+      setUserEmail('');
+      setCurrentRoute('email-confirmed');
+      setAuthLoading(false);
+      return;
+    }
+
     if (!session) {
       pendingCheckRef.current = null;
       lastCheckedUserRef.current = null;
@@ -252,9 +264,7 @@ export default function App() {
       setUserEmail('');
 
       const pathRoute = getPathRoute();
-      if (pathRoute === 'email-confirmed') {
-        setCurrentRoute('email-confirmed');
-      } else if (pathRoute === 'signup') {
+      if (pathRoute === 'signup') {
         setCurrentRoute('signup');
       } else {
         setCurrentRoute('signin');
@@ -304,10 +314,7 @@ export default function App() {
         setUserEmail('');
 
         const pathRoute = getPathRoute();
-        // Always stay on email-confirmed — never redirect away from it
-        if (pathRoute === 'email-confirmed') {
-          setCurrentRoute('email-confirmed');
-        } else if (pathRoute === 'signup') {
+        if (pathRoute === 'signup') {
           setCurrentRoute('signup');
         } else {
           setCurrentRoute('signin');
@@ -328,25 +335,23 @@ export default function App() {
       setUserEmail(session.user.email || '');
 
       const pathRoute = getPathRoute();
-      // If currently on /email-confirmed, stay there — do not redirect even if verified
-      if (pathRoute === 'email-confirmed') {
-        setCurrentRoute('email-confirmed');
+      const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
+      if (privateRoutes.includes(pathRoute)) {
+        setCurrentRoute(pathRoute);
       } else {
-        const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
-        if (privateRoutes.includes(pathRoute)) {
-          setCurrentRoute(pathRoute);
-        } else {
-          setCurrentRoute('dashboard');
-        }
+        setCurrentRoute('dashboard');
       }
 
       await fetchSchedulesAndEarnings(session.user.id);
     } catch (e) {
       console.error('Error verifying user status:', e);
       lastCheckedUserRef.current = null;
-      await authSupabase.auth.signOut();
-      setIsLoggedIn(false);
-      setCurrentRoute('signin');
+      // Only sign out & redirect if not on email-confirmed
+      if (getPathRoute() !== 'email-confirmed') {
+        await authSupabase.auth.signOut();
+        setIsLoggedIn(false);
+        setCurrentRoute('signin');
+      }
     } finally {
       pendingCheckRef.current = null;
       setAuthLoading(false);
