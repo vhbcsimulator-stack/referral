@@ -14,6 +14,14 @@ export default function Support({ userName, userEmail }) {
 
   // Load tickets from localStorage on mount
   useEffect(() => {
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
+    console.log(
+      '[Support] Web3Forms Key Status:',
+      accessKey
+        ? `Loaded (${accessKey.substring(0, 4)}...${accessKey.slice(-4)})`
+        : 'Not Loaded/Undefined'
+    );
+
     const savedTickets = localStorage.getItem('vhbc_support_tickets');
     if (savedTickets) {
       try {
