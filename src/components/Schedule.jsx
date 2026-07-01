@@ -225,10 +225,6 @@ export default function Schedule({ appointments, onConfirmAppointment, onCancelA
                 {upcomingAppts.length} Appointment{upcomingAppts.length !== 1 ? 's' : ''} scheduled
               </p>
             </div>
-            <button className="schedule-print-btn" onClick={() => window.print()}>
-              <span className="material-symbols-outlined">print</span>
-              <span>Print</span>
-            </button>
           </div>
 
           <div className="schedule-events-container">

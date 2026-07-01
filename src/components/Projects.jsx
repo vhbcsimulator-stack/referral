@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { mainSupabase } from '../supabaseClient';
 
 const PROJECTS = [
-  { id: 'EBLF', name: 'EastWest Breeze Leisure Farm' },
-  { id: 'MVLC', name: 'Mountain View Community' }
+  { id: 'EBLF', name: 'EastWest Breeze Leisure Farm & Resort' },
+  { id: 'MVLC', name: 'Mountain View Leisure Community' }
 ];
 
 export default function Projects() {
@@ -193,11 +193,11 @@ export default function Projects() {
   // Combine items for Bento Box
   const getFilteredItems = () => {
     const { actual, perspective, videos } = rawMedia;
-    
+
     if (filterType === 'actual') return actual;
     if (filterType === 'perspective') return perspective;
     if (filterType === 'videos') return videos;
-    
+
     // For 'all' - Interleave them nicely or group them (Videos -> Actual -> Perspective)
     return [...videos, ...actual, ...perspective];
   };
@@ -210,7 +210,7 @@ export default function Projects() {
       // Videos are featured, make them wide or large
       return index === 0 ? 'bento-item-large' : 'bento-item-wide';
     }
-    
+
     // Images: Create a varied, alternating pattern
     const patternIndex = index % 8;
     if (patternIndex === 1 || patternIndex === 5) {
@@ -344,7 +344,7 @@ export default function Projects() {
             <div className="projects-bento-grid">
               {displayedItems.map((item, index) => {
                 const bentoSizeClass = getBentoClass(item, index);
-                
+
                 if (item.type === 'video') {
                   return (
                     <div
@@ -363,7 +363,7 @@ export default function Projects() {
                           <span className="material-symbols-outlined play-icon">play_arrow</span>
                         </div>
                       </div>
-                      
+
                       {/* Floating Category Badge */}
                       <div className="bento-badge video-badge">
                         <span className="material-symbols-outlined badge-icon">smart_display</span>

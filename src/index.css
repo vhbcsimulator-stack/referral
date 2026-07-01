@@ -6019,6 +6019,74 @@ button, input, select, textarea {
   display: block;
 }
 
+/* ============================================================
+   Projects Page Responsiveness Enhancements
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .projects-bento-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-auto-rows: 160px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .projects-bento-grid {
+    grid-template-columns: 1fr !important;
+    grid-auto-rows: auto !important;
+    gap: 12px !important;
+  }
+
+  .media-bento-card {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+    height: 220px !important;
+  }
+
+  .bento-media-img {
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  .skeleton-media-card {
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+    height: 220px !important;
+  }
+
+  .projects-header-bar {
+    padding: 16px !important;
+    text-align: center;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .projects-header-info {
+    align-items: center;
+  }
+
+  .projects-dropdown-container {
+    align-items: center;
+    width: 100%;
+  }
+
+  .projects-tabs-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .projects-tab-btn {
+    flex: 1 1 auto;
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+    justify-content: center;
+  }
+}
+
+
 
 
 
