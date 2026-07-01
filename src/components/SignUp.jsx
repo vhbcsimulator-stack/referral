@@ -124,7 +124,7 @@ export default function SignUp({ onRegister, onNavigate }) {
 
       if (error) throw error;
 
-      alert('Registration successful! Your account is pending verification. Please wait for an admin to approve your account.');
+      alert('Registration successful! Your account is pending verification. Email confirmation sent, please confirm your email.');
       onNavigate('signin');
     } catch (err) {
       alert(`Registration error: ${err.message}`);
