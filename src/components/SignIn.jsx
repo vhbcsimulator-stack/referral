@@ -22,24 +22,6 @@ export default function SignIn({ onLogin, onNavigate }) {
       if (error) throw error;
 
       if (data.user) {
-        // Check if the user is verified in the app_users table
-        const { data: userRecord, error: dbError } = await authSupabase
-          .from('app_users')
-          .select('verification_status')
-          .eq('id', data.user.id)
-          .maybeSingle();
-
-        if (dbError) throw dbError;
-
-        const isVerified = userRecord?.verification_status === 'verified';
-
-        if (!isVerified) {
-          // Sign them out immediately so they can't access the app
-          await authSupabase.auth.signOut();
-          alert('Your account is pending verification. Please wait for an admin to approve your account.');
-          return;
-        }
-
         if (onLogin) onLogin(email);
       }
     } catch (err) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import MetricCard from './components/MetricCard';
@@ -44,6 +44,11 @@ export default function App() {
   const [userId, setUserId] = useState(null);
   const [notifPanelOpen, setNotifPanelOpen] = useState(false);
   const [profilePicUrl, setProfilePicUrl] = useState(null);
+
+  // Auth Verification States
+  const [authLoading, setAuthLoading] = useState(true);
+  const lastCheckedUserRef = useRef(null);
+  const pendingCheckRef = useRef(null);
 
   // Search filter
   const [searchVal, setSearchVal] = useState('');
@@ -236,73 +241,153 @@ export default function App() {
     }
   };
 
-  // Auth Session State Effect
-  useEffect(() => {
-    // Check current active session
-    authSupabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setIsLoggedIn(true);
-        setUserId(session.user.id);
-        setUserName(session.user.user_metadata?.full_name || session.user.email);
-        setUserEmail(session.user.email || '');
+  // Helper function to check user verification and manage login session
+  const checkVerificationAndLogin = async (session, event) => {
+    if (!session) {
+      pendingCheckRef.current = null;
+      lastCheckedUserRef.current = null;
+      setIsLoggedIn(false);
+      setUserId(null);
+      setUserName('');
+      setUserEmail('');
 
-        const pathRoute = getPathRoute();
-        const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
-        if (privateRoutes.includes(pathRoute)) {
-          setCurrentRoute(pathRoute);
-        } else {
-          setCurrentRoute('dashboard');
-        }
-
-        fetchSchedulesAndEarnings(session.user.id);
-      }
-    });
-
-    // Listen for auth state changes
-    const { data: { subscription } } = authSupabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        setIsLoggedIn(true);
-        setUserId(session.user.id);
-        setUserName(session.user.user_metadata?.full_name || session.user.email);
-        setUserEmail(session.user.email || '');
-
-        const pathRoute = getPathRoute();
-        const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
-        if (privateRoutes.includes(pathRoute)) {
-          setCurrentRoute(pathRoute);
-        } else {
-          setCurrentRoute('dashboard');
-        }
-
-        fetchSchedulesAndEarnings(session.user.id);
+      const pathRoute = getPathRoute();
+      if (pathRoute === 'signup') {
+        setCurrentRoute('signup');
+      } else if (pathRoute === 'email-confirmed') {
+        setCurrentRoute('email-confirmed');
       } else {
+        setCurrentRoute('signin');
+      }
+
+      setNotifPanelOpen(false);
+      setActivities([]);
+      setClients([]);
+      setAppointments([]);
+      setTransactions([]);
+      setTotalEarningsFromDb(0);
+      setPendingEarningsFromDb(0);
+      setProfilePicUrl(null);
+      setAuthLoading(false);
+      return;
+    }
+
+    if (lastCheckedUserRef.current === session.user.id || pendingCheckRef.current === session.user.id) {
+      setAuthLoading(false);
+      return;
+    }
+
+    pendingCheckRef.current = session.user.id;
+
+    try {
+      // Check if the user is verified in the app_users table
+      const { data: userRecord, error: dbError } = await authSupabase
+        .from('app_users')
+        .select('verification_status')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      if (dbError) throw dbError;
+
+      const isVerified = userRecord?.verification_status === 'verified';
+
+      if (!isVerified) {
+        lastCheckedUserRef.current = null;
+        pendingCheckRef.current = null;
+        
+        // Sign them out immediately so they can't access the app
+        await authSupabase.auth.signOut();
+        
         setIsLoggedIn(false);
         setUserId(null);
         setUserName('');
         setUserEmail('');
 
         const pathRoute = getPathRoute();
-        if (pathRoute === 'signup') {
-          setCurrentRoute('signup');
-        } else if (pathRoute === 'email-confirmed') {
+        if (pathRoute === 'email-confirmed') {
           setCurrentRoute('email-confirmed');
+        } else if (pathRoute === 'signup') {
+          setCurrentRoute('signup');
         } else {
           setCurrentRoute('signin');
         }
 
-        setNotifPanelOpen(false);
-        setActivities([]);
-        setClients([]);
-        setAppointments([]);
-        setTransactions([]);
-        setTotalEarningsFromDb(0);
-        setPendingEarningsFromDb(0);
-        setProfilePicUrl(null);
+        if (event === 'SIGNED_IN' && getPathRoute() === 'signin') {
+          alert('Your account is pending verification. Please wait for an admin to approve your account.');
+        }
+        setAuthLoading(false);
+        return;
       }
+
+      // User is verified, log them in
+      lastCheckedUserRef.current = session.user.id;
+      setIsLoggedIn(true);
+      setUserId(session.user.id);
+      setUserName(session.user.user_metadata?.full_name || session.user.email);
+      setUserEmail(session.user.email || '');
+
+      const pathRoute = getPathRoute();
+      const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
+      if (privateRoutes.includes(pathRoute)) {
+        setCurrentRoute(pathRoute);
+      } else {
+        setCurrentRoute('dashboard');
+      }
+
+      await fetchSchedulesAndEarnings(session.user.id);
+    } catch (e) {
+      console.error('Error verifying user status:', e);
+      lastCheckedUserRef.current = null;
+      await authSupabase.auth.signOut();
+      setIsLoggedIn(false);
+      setCurrentRoute('signin');
+    } finally {
+      pendingCheckRef.current = null;
+      setAuthLoading(false);
+    }
+  };
+
+  // Auth Session State Effect
+  useEffect(() => {
+    // Check current active session
+    authSupabase.auth.getSession().then(({ data: { session } }) => {
+      checkVerificationAndLogin(session, 'INITIAL_SESSION');
+    });
+
+    // Listen for auth state changes
+    const { data: { subscription } } = authSupabase.auth.onAuthStateChange((event, session) => {
+      checkVerificationAndLogin(session, event);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Real-time Postgres status revocation listener
+  useEffect(() => {
+    if (!userId) return;
+
+    const channel = authSupabase
+      .channel(`user-security-check-${userId}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'app_users', filter: `id=eq.${userId}` },
+        async (payload) => {
+          if (payload.new && payload.new.verification_status !== 'verified') {
+            alert('Your account verification status has been updated. Logging out.');
+            try {
+              await authSupabase.auth.signOut();
+            } catch (e) {
+              console.error('Signout failed:', e);
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, [userId]);
 
   // Synchronize browser URL with currentRoute state
   useEffect(() => {
@@ -563,6 +648,17 @@ export default function App() {
     }));
 
   // --- Router Render Options ---
+  if (authLoading) {
+    return (
+      <div className="auth-page-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+          <div className="profile-loading-spinner" style={{ width: '48px', height: '48px', borderWidth: '4px' }}></div>
+          <p style={{ color: 'var(--color-on-surface-variant)', fontWeight: '500' }}>Loading account details...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!isLoggedIn) {
     if (currentRoute === 'signup') {
       return <SignUp onRegister={handleRegister} onNavigate={setCurrentRoute} />;
