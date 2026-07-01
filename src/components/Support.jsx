@@ -5,11 +5,11 @@ export default function Support({ userName, userEmail }) {
   const [email, setEmail] = useState(userEmail || '');
   const [subject, setSubject] = useState('General Inquiry');
   const [message, setMessage] = useState('');
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  
+
   const [tickets, setTickets] = useState([]);
 
   // Load tickets from localStorage on mount
@@ -30,7 +30,7 @@ export default function Support({ userName, userEmail }) {
     if (userEmail) setEmail(userEmail);
   }, [userName, userEmail]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
     setSubmitSuccess(false);
@@ -50,10 +50,12 @@ export default function Support({ userName, userEmail }) {
 
     setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
+    const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
+
+    // Helper to generate a new ticket item locally
+    const generateLocalTicket = () => {
       const ticketId = `TKT-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
-      const newTicket = {
+      return {
         id: ticketId,
         name: name.trim(),
         email: email.trim(),
@@ -68,20 +70,69 @@ export default function Support({ userName, userEmail }) {
           minute: '2-digit',
         }),
       };
+    };
 
-      const updatedTickets = [newTicket, ...tickets];
-      setTickets(updatedTickets);
-      localStorage.setItem('vhbc_support_tickets', JSON.stringify(updatedTickets));
+    // If key is not configured or is the default placeholder, fallback to demo mode
+    if (!accessKey || accessKey === 'your_access_key_here') {
+      console.warn(
+        'Support Contact Form: VITE_WEB3FORMS_ACCESS_KEY is not configured in your .env file. Falling back to Demo Mode.'
+      );
 
-      setIsSubmitting(false);
-      setSubmitSuccess(true);
-      setMessage('');
-      
-      // Auto dismiss success banner after 5 seconds
+      // Simulate API delay
       setTimeout(() => {
-        setSubmitSuccess(false);
-      }, 5000);
-    }, 1500);
+        const newTicket = generateLocalTicket();
+        const updatedTickets = [newTicket, ...tickets];
+        setTickets(updatedTickets);
+        localStorage.setItem('vhbc_support_tickets', JSON.stringify(updatedTickets));
+
+        setIsSubmitting(false);
+        setSubmitSuccess(true);
+        setMessage('');
+
+        // Auto dismiss success banner
+        setTimeout(() => setSubmitSuccess(false), 5000);
+      }, 1000);
+      return;
+    }
+
+    try {
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: accessKey,
+          name: name.trim(),
+          email: email.trim(),
+          subject: subject,
+          message: message.trim(),
+          from_name: 'VHBC Referral App Support',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const newTicket = generateLocalTicket();
+        const updatedTickets = [newTicket, ...tickets];
+        setTickets(updatedTickets);
+        localStorage.setItem('vhbc_support_tickets', JSON.stringify(updatedTickets));
+
+        setSubmitSuccess(true);
+        setMessage('');
+
+        setTimeout(() => setSubmitSuccess(false), 5000);
+      } else {
+        setErrorMsg(data.message || 'Failed to submit the form. Please try again.');
+      }
+    } catch (err) {
+      console.error('Web3Forms submit error:', err);
+      setErrorMsg('A network error occurred. Please check your internet connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClearTickets = () => {
@@ -110,7 +161,7 @@ export default function Support({ userName, userEmail }) {
               <span className="material-symbols-outlined profile-card-icon">mail</span>
               <h3 className="profile-card-title">Send Us a Message</h3>
             </div>
-            
+
             <div className="profile-card-body">
               {submitSuccess && (
                 <div className="support-success-banner animate-fade-in">
@@ -136,13 +187,13 @@ export default function Support({ userName, userEmail }) {
                     <label className="profile-field-label" htmlFor="support-name">Your Name</label>
                     <div className="profile-input-wrap">
                       <span className="material-symbols-outlined profile-input-icon">person</span>
-                      <input 
-                        id="support-name" 
-                        type="text" 
-                        className="profile-input" 
-                        placeholder="John Doe" 
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)} 
+                      <input
+                        id="support-name"
+                        type="text"
+                        className="profile-input"
+                        placeholder="John Doe"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                       />
                     </div>
                   </div>
@@ -152,13 +203,13 @@ export default function Support({ userName, userEmail }) {
                     <label className="profile-field-label" htmlFor="support-email">Email Address</label>
                     <div className="profile-input-wrap">
                       <span className="material-symbols-outlined profile-input-icon">mail</span>
-                      <input 
-                        id="support-email" 
-                        type="email" 
-                        className="profile-input" 
-                        placeholder="john@example.com" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
+                      <input
+                        id="support-email"
+                        type="email"
+                        className="profile-input"
+                        placeholder="john@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
                   </div>
@@ -168,10 +219,10 @@ export default function Support({ userName, userEmail }) {
                     <label className="profile-field-label" htmlFor="support-subject">Subject</label>
                     <div className="profile-input-wrap">
                       <span className="material-symbols-outlined profile-input-icon">subject</span>
-                      <select 
-                        id="support-subject" 
-                        className="profile-input profile-select" 
-                        value={subject} 
+                      <select
+                        id="support-subject"
+                        className="profile-input profile-select"
+                        value={subject}
                         onChange={(e) => setSubject(e.target.value)}
                       >
                         <option value="General Inquiry">General Inquiry</option>
@@ -189,13 +240,13 @@ export default function Support({ userName, userEmail }) {
                     <label className="profile-field-label" htmlFor="support-message">Message</label>
                     <div className="profile-input-wrap">
                       <span className="material-symbols-outlined profile-input-icon" style={{ alignSelf: 'flex-start', paddingTop: '10px' }}>message</span>
-                      <textarea 
-                        id="support-message" 
-                        className="profile-input profile-textarea" 
-                        placeholder="Describe your issue or question in detail..." 
-                        rows={5} 
-                        value={message} 
-                        onChange={(e) => setMessage(e.target.value)} 
+                      <textarea
+                        id="support-message"
+                        className="profile-input profile-textarea"
+                        placeholder="Describe your issue or question in detail..."
+                        rows={5}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
                       />
                     </div>
                   </div>
@@ -237,13 +288,13 @@ export default function Support({ userName, userEmail }) {
               <p className="support-call-text">
                 Speak directly with our team to accelerate your referrals, verify payout timelines, or handle urgent queries.
               </p>
-              
+
               <div className="support-phone-number">
                 <span className="material-symbols-outlined phone-icon">phone_in_talk</span>
-                <a href="tel:+19171897112" className="phone-link">+1 (917) 189-7112</a>
+                <a href="tel:+639171897112" className="phone-link">+63 917 189 7112</a>
               </div>
-              
-              <a href="tel:+19171897112" className="support-call-btn">
+
+              <a href="tel:+639171897112" className="support-call-btn">
                 <span className="material-symbols-outlined">call</span>
                 <span>Call Sales Now</span>
               </a>
