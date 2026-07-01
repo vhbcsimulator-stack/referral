@@ -40,7 +40,10 @@ export default function Sidebar({ activeTab, setActiveTab, onNewReferralClick, i
           <span className="material-symbols-outlined">add_circle</span>
           <span>New Referral</span>
         </button>
-        <button className="sidebar-nav-btn secondary-btn" onClick={() => alert('Support clicked')}>
+        <button
+          className={`sidebar-nav-btn secondary-btn ${activeTab === 'support' ? 'active' : ''}`}
+          onClick={() => setActiveTab('support')}
+        >
           <span className="material-symbols-outlined">help</span>
           <span className="sidebar-nav-text">Support</span>
         </button>

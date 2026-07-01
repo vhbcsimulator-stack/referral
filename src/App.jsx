@@ -24,6 +24,7 @@ import Booking from './components/Booking';
 import Projects from './components/Projects';
 import Settings from './components/Settings';
 import Profile from './components/Profile';
+import Support from './components/Support';
 
 export default function App() {
   // Navigation Routing States
@@ -691,6 +692,13 @@ export default function App() {
               userName={userName}
               userEmail={userEmail}
               onProfilePicChange={(url) => setProfilePicUrl(url)}
+            />
+          )}
+
+          {currentRoute === 'support' && (
+            <Support
+              userName={userName}
+              userEmail={userEmail}
             />
           )}
 

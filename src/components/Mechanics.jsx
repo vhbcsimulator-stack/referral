@@ -20,7 +20,7 @@ export default function Mechanics() {
       step: '3',
       title: '3. Earn',
       icon: 'account_balance_wallet',
-      desc: 'Receive your commission automatically once the transaction clears escrow. Funds are deposited directly.',
+      desc: 'Receive your commission once the transaction closes. Finance department will coordinate with you for the payout.',
       isHighlighted: true
     }
   ];
