@@ -124,7 +124,7 @@ export default function SignUp({ onRegister, onNavigate }) {
 
       if (error) throw error;
 
-      alert('Registration successful! Your account is pending verification. Email confirmation sent, please confirm your email.');
+      alert('Registration successful! Your account is pending verification. A confirmation email has been sent to your email address. Please check your inbox and verify your email.');
       onNavigate('signin');
     } catch (err) {
       alert(`Registration error: ${err.message}`);
