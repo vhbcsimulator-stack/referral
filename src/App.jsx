@@ -26,11 +26,17 @@ import Settings from './components/Settings';
 import Profile from './components/Profile';
 import Support from './components/Support';
 
+const getPathRoute = () => {
+  const path = window.location.pathname.replace(/^\/|\/$/g, '');
+  const validRoutes = ['signin', 'signup', 'dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
+  return validRoutes.includes(path) ? path : '';
+};
+
 export default function App() {
   // Navigation Routing States
   // Public tabs: 'signin', 'signup'
   // Private tabs: 'dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking'
-  const [currentRoute, setCurrentRoute] = useState('signin');
+  const [currentRoute, setCurrentRoute] = useState(() => getPathRoute() || 'signin');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
@@ -238,7 +244,15 @@ export default function App() {
         setUserId(session.user.id);
         setUserName(session.user.user_metadata?.full_name || session.user.email);
         setUserEmail(session.user.email || '');
-        setCurrentRoute('dashboard');
+
+        const pathRoute = getPathRoute();
+        const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
+        if (privateRoutes.includes(pathRoute)) {
+          setCurrentRoute(pathRoute);
+        } else {
+          setCurrentRoute('dashboard');
+        }
+
         fetchSchedulesAndEarnings(session.user.id);
       }
     });
@@ -250,14 +264,29 @@ export default function App() {
         setUserId(session.user.id);
         setUserName(session.user.user_metadata?.full_name || session.user.email);
         setUserEmail(session.user.email || '');
-        setCurrentRoute('dashboard');
+
+        const pathRoute = getPathRoute();
+        const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
+        if (privateRoutes.includes(pathRoute)) {
+          setCurrentRoute(pathRoute);
+        } else {
+          setCurrentRoute('dashboard');
+        }
+
         fetchSchedulesAndEarnings(session.user.id);
       } else {
         setIsLoggedIn(false);
         setUserId(null);
         setUserName('');
         setUserEmail('');
-        setCurrentRoute('signin');
+
+        const pathRoute = getPathRoute();
+        if (pathRoute === 'signup') {
+          setCurrentRoute('signup');
+        } else {
+          setCurrentRoute('signin');
+        }
+
         setNotifPanelOpen(false);
         setActivities([]);
         setClients([]);
@@ -271,6 +300,38 @@ export default function App() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Synchronize browser URL with currentRoute state
+  useEffect(() => {
+    const path = currentRoute === 'dashboard' ? '/' : `/${currentRoute}`;
+    if (window.location.pathname !== path) {
+      window.history.pushState({ route: currentRoute }, '', path);
+    }
+  }, [currentRoute]);
+
+  // Handle browser back/forward buttons (popstate event)
+  useEffect(() => {
+    const handlePopState = (event) => {
+      const pathRoute = getPathRoute();
+      if (isLoggedIn) {
+        const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
+        if (privateRoutes.includes(pathRoute)) {
+          setCurrentRoute(pathRoute);
+        } else {
+          setCurrentRoute('dashboard');
+        }
+      } else {
+        if (pathRoute === 'signup') {
+          setCurrentRoute('signup');
+        } else {
+          setCurrentRoute('signin');
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [isLoggedIn]);
 
   // Notification hook — always called (rules of hooks)
   const { notifications, unreadCount, markRead, markAllRead, clearAll } = useNotifications(userId);
