@@ -110,6 +110,7 @@ export default function SignUp({ onRegister, onNavigate }) {
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/email-confirmed`,
           data: {
             full_name: fullName,
             mobile_number: mobile,

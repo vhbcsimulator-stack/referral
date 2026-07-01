@@ -659,6 +659,12 @@ export default function App() {
     }));
 
   // --- Router Render Options ---
+
+  // Show /email-confirmed immediately — never wait for auth or redirect
+  if (getPathRoute() === 'email-confirmed' || currentRoute === 'email-confirmed') {
+    return <EmailConfirmed onNavigate={setCurrentRoute} />;
+  }
+
   if (authLoading) {
     return (
       <div className="auth-page-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
