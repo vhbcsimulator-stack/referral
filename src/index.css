@@ -697,6 +697,15 @@ button, input, select, textarea {
   color: var(--color-on-primary);
 }
 
+.metric-card.highlighted .metric-trend {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+.metric-card.highlighted .metric-trend .material-symbols-outlined {
+  color: var(--color-on-primary-container) !important;
+}
+
 /* Bento Grid Dashboard Layout */
 .dashboard-grid {
   display: grid;

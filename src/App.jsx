@@ -458,7 +458,7 @@ export default function App() {
   const conversionRate = appointments.length > 0
     ? Math.round((appointments.filter(a => ['closed sale', 'closed', 'sold', 'reserved', 'converted', 'cleared'].includes((a.status || '').toLowerCase().trim())).length / appointments.length) * 100)
     : 0;
-  const pipelineValue = activeReferralsCount * 1000;
+
 
   // Filter activities based on search value in Dashboard
   const filteredActivities = activities.filter((activity) => {
@@ -588,6 +588,7 @@ export default function App() {
                   trend="+12%"
                   isPositive={true}
                   icon="payments"
+                  isHighlighted={true}
                 />
                 <MetricCard
                   title="Active Referrals"
@@ -602,12 +603,6 @@ export default function App() {
                   trend="+2.4%"
                   isPositive={true}
                   icon="ads_click"
-                />
-                <MetricCard
-                  title="Pipeline Value"
-                  value={`$${pipelineValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-                  icon="rocket_launch"
-                  isHighlighted={true}
                 />
               </section>
 
