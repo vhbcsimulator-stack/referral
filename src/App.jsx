@@ -252,10 +252,10 @@ export default function App() {
       setUserEmail('');
 
       const pathRoute = getPathRoute();
-      if (pathRoute === 'signup') {
-        setCurrentRoute('signup');
-      } else if (pathRoute === 'email-confirmed') {
+      if (pathRoute === 'email-confirmed') {
         setCurrentRoute('email-confirmed');
+      } else if (pathRoute === 'signup') {
+        setCurrentRoute('signup');
       } else {
         setCurrentRoute('signin');
       }
@@ -304,6 +304,7 @@ export default function App() {
         setUserEmail('');
 
         const pathRoute = getPathRoute();
+        // Always stay on email-confirmed — never redirect away from it
         if (pathRoute === 'email-confirmed') {
           setCurrentRoute('email-confirmed');
         } else if (pathRoute === 'signup') {
@@ -327,11 +328,16 @@ export default function App() {
       setUserEmail(session.user.email || '');
 
       const pathRoute = getPathRoute();
-      const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
-      if (privateRoutes.includes(pathRoute)) {
-        setCurrentRoute(pathRoute);
+      // If currently on /email-confirmed, stay there — do not redirect even if verified
+      if (pathRoute === 'email-confirmed') {
+        setCurrentRoute('email-confirmed');
       } else {
-        setCurrentRoute('dashboard');
+        const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
+        if (privateRoutes.includes(pathRoute)) {
+          setCurrentRoute(pathRoute);
+        } else {
+          setCurrentRoute('dashboard');
+        }
       }
 
       await fetchSchedulesAndEarnings(session.user.id);
