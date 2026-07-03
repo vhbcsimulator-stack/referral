@@ -6,6 +6,9 @@ export default function SignIn({ onLogin, onNavigate }) {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
+  const [forgotError, setForgotError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +35,28 @@ export default function SignIn({ onLogin, onNavigate }) {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setForgotError('');
+    setForgotSent(false);
+    if (!email) {
+      setForgotError('Please enter your email address above first.');
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      const { error } = await authSupabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`
+      });
+      if (error) throw error;
+      setForgotSent(true);
+    } catch (err) {
+      setForgotError(err.message || 'Failed to send reset email.');
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -76,8 +101,13 @@ export default function SignIn({ onLogin, onNavigate }) {
             <div className="form-group">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
                 <label className="form-label" htmlFor="auth-password" style={{ margin: 0 }}>Password</label>
-                <a className="auth-link" href="#forgot" onClick={(e) => { e.preventDefault(); alert('Password reset link sent.'); }}>
-                  Forgot password?
+                <a
+                  className="auth-link"
+                  href="#forgot"
+                  onClick={handleForgotPassword}
+                  style={{ opacity: forgotLoading ? 0.6 : 1, pointerEvents: forgotLoading ? 'none' : 'auto' }}
+                >
+                  {forgotLoading ? 'Sending...' : 'Forgot password?'}
                 </a>
               </div>
               <div className="auth-input-wrapper">
@@ -103,6 +133,30 @@ export default function SignIn({ onLogin, onNavigate }) {
                 </button>
               </div>
             </div>
+
+            {/* Forgot password feedback */}
+            {forgotSent && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '10px 14px', borderRadius: '10px', marginBottom: '4px',
+                backgroundColor: 'rgba(34,197,94,0.1)', color: '#16a34a',
+                fontSize: '13px', border: '1px solid rgba(34,197,94,0.25)'
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>mark_email_read</span>
+                <span>Reset link sent! Check your inbox for <strong>{email}</strong>.</span>
+              </div>
+            )}
+            {forgotError && (
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '10px 14px', borderRadius: '10px', marginBottom: '4px',
+                backgroundColor: 'rgba(186,26,26,0.08)', color: '#ba1a1a',
+                fontSize: '13px', border: '1px solid rgba(186,26,26,0.2)'
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>error</span>
+                <span>{forgotError}</span>
+              </div>
+            )}
 
             <div className="auth-remember-row">
               <label className="auth-checkbox-label">

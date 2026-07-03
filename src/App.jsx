@@ -26,10 +26,11 @@ import Settings from './components/Settings';
 import Profile from './components/Profile';
 import Support from './components/Support';
 import EmailConfirmed from './components/EmailConfirmed';
+import ResetPassword from './components/ResetPassword';
 
 const getPathRoute = () => {
   const path = window.location.pathname.replace(/^\/|\/$/g, '');
-  const validRoutes = ['signin', 'signup', 'dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support', 'email-confirmed'];
+  const validRoutes = ['signin', 'signup', 'dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support', 'email-confirmed', 'reset-password'];
   return validRoutes.includes(path) ? path : '';
 };
 
@@ -245,7 +246,7 @@ export default function App() {
 
   // Helper function to check user verification and manage login session
   const checkVerificationAndLogin = async (session, event) => {
-    // If the user is on /email-confirmed, never redirect away — just clear state and stay.
+    // If the user is on /email-confirmed or /reset-password, never redirect away
     const currentPath = getPathRoute();
     if (currentPath === 'email-confirmed') {
       setIsLoggedIn(false);
@@ -253,6 +254,11 @@ export default function App() {
       setUserName('');
       setUserEmail('');
       setCurrentRoute('email-confirmed');
+      setAuthLoading(false);
+      return;
+    }
+    if (currentPath === 'reset-password') {
+      setCurrentRoute('reset-password');
       setAuthLoading(false);
       return;
     }
@@ -369,6 +375,12 @@ export default function App() {
 
     // Listen for auth state changes
     const { data: { subscription } } = authSupabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        // User arrived via password reset email link — show reset page
+        setCurrentRoute('reset-password');
+        setAuthLoading(false);
+        return;
+      }
       checkVerificationAndLogin(session, event);
     });
 
@@ -668,6 +680,11 @@ export default function App() {
     return <EmailConfirmed onNavigate={setCurrentRoute} />;
   }
 
+  // Show /reset-password immediately when triggered by Supabase recovery link
+  if (currentRoute === 'reset-password') {
+    return <ResetPassword onNavigate={setCurrentRoute} />;
+  }
+
   if (authLoading) {
     return (
       <div className="auth-page-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
@@ -685,6 +702,9 @@ export default function App() {
     }
     if (currentRoute === 'email-confirmed') {
       return <EmailConfirmed onNavigate={setCurrentRoute} />;
+    }
+    if (currentRoute === 'reset-password') {
+      return <ResetPassword onNavigate={setCurrentRoute} />;
     }
     return <SignIn onLogin={handleLogin} onNavigate={setCurrentRoute} />;
   }
@@ -885,6 +905,10 @@ export default function App() {
               userName={userName}
               userEmail={userEmail}
             />
+          )}
+
+          {currentRoute === 'reset-password' && (
+            <ResetPassword onNavigate={(route) => setCurrentRoute(route)} />
           )}
 
           {/* Spacer for clean bottom lines */}
