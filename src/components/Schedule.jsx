@@ -21,6 +21,14 @@ export default function Schedule({ appointments, onConfirmAppointment, onCancelA
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [selectedDay, setSelectedDay] = useState(today.getDate());
   const [selectedClient, setSelectedClient] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
+
+  const handleCopyLink = (id, link) => {
+    navigator.clipboard.writeText(link).then(() => {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
 
   // ---- Calendar data ----
   const daysInMonth = getDaysInMonth(viewYear, viewMonth);
@@ -283,19 +291,52 @@ export default function Schedule({ appointments, onConfirmAppointment, onCancelA
                         <span className="material-symbols-outlined">
                           {appt.type === 'virtual' ? 'videocam' : 'location_on'}
                         </span>
-                        {appt.type === 'virtual' ? (
-                          <a href="#zoom" onClick={(e) => { e.preventDefault(); alert('Connecting to video call...'); }}>
-                            {appt.location}
-                          </a>
-                        ) : (
-                          <span>{appt.location}</span>
-                        )}
+                        <span>{appt.location}</span>
                       </div>
                       <div className="event-detail-item">
                         <span className="material-symbols-outlined">schedule</span>
                         <span>{appt.duration}</span>
                       </div>
                     </div>
+
+                    {/* Meeting Link Row */}
+                    {appt.meetingLink && (appt.platform === 'Google Meet' || appt.platform === 'Zoom') && (
+                      <div className="client-meeting-link-row" style={{ marginTop: '12px' }}>
+                        <span className="material-symbols-outlined" style={{ color: appt.platform === 'Google Meet' ? '#34a853' : '#2d8cff', flexShrink: 0 }}>
+                          {appt.platform === 'Google Meet' ? 'duo' : 'videocam'}
+                        </span>
+                        <a
+                          href={appt.meetingLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="client-meeting-link-url"
+                          title={appt.meetingLink}
+                        >
+                          {appt.meetingLink}
+                        </a>
+                        <div className="client-meeting-link-actions">
+                          <button
+                            className="meeting-link-btn copy-btn"
+                            onClick={() => handleCopyLink(appt.id, appt.meetingLink)}
+                            title="Copy link"
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                              {copiedId === appt.id ? 'check' : 'content_copy'}
+                            </span>
+                            <span>{copiedId === appt.id ? 'Copied!' : 'Copy Link'}</span>
+                          </button>
+                          <a
+                            href={appt.meetingLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="meeting-link-btn join-btn"
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>open_in_new</span>
+                            <span>Join Meeting</span>
+                          </a>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="event-action-buttons">
                       {appt.status === 'Pending' ? (
@@ -433,6 +474,45 @@ export default function Schedule({ appointments, onConfirmAppointment, onCancelA
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>public</span>
                   <span>Timezone: {selectedClient.timezone}</span>
                 </div>
+
+                {/* Meeting link in modal */}
+                {selectedClient.meetingLink && (selectedClient.platform === 'Google Meet' || selectedClient.platform === 'Zoom') && (
+                  <div className="client-meeting-link-row" style={{ marginTop: '14px' }}>
+                    <span className="material-symbols-outlined" style={{ color: selectedClient.platform === 'Google Meet' ? '#34a853' : '#2d8cff', flexShrink: 0 }}>
+                      {selectedClient.platform === 'Google Meet' ? 'duo' : 'videocam'}
+                    </span>
+                    <a
+                      href={selectedClient.meetingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="client-meeting-link-url"
+                      title={selectedClient.meetingLink}
+                    >
+                      {selectedClient.meetingLink}
+                    </a>
+                    <div className="client-meeting-link-actions">
+                      <button
+                        className="meeting-link-btn copy-btn"
+                        onClick={() => handleCopyLink('modal', selectedClient.meetingLink)}
+                        title="Copy link"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                          {copiedId === 'modal' ? 'check' : 'content_copy'}
+                        </span>
+                        <span>{copiedId === 'modal' ? 'Copied!' : 'Copy Link'}</span>
+                      </button>
+                      <a
+                        href={selectedClient.meetingLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="meeting-link-btn join-btn"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>open_in_new</span>
+                        <span>Join Meeting</span>
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -156,7 +156,8 @@ export default function App() {
         propertyInterest: s.platform === 'site_tripping' ? 'Site Tripping View' : s.platform,
         scheduleDate: s.schedule_date,
         scheduleTime: formatDbTimeTo12Hour(s.schedule_time),
-        platform: s.platform
+        platform: s.platform,
+        meetingLink: s.meeting_link || ''
       }));
 
       // 5. Map schedules to appointments
@@ -186,7 +187,8 @@ export default function App() {
           duration: '1 hr 00 mins',
           status: s.status === 'Approved' ? 'For Tripping' : s.status,
           type: s.platform === 'site_tripping' ? 'site' : 'virtual',
-          location: s.platform === 'site_tripping' ? 'VHBC Property Lot Tour' : 'Online Call'
+          location: s.platform === 'site_tripping' ? 'VHBC Property Lot Tour' : 'Online Call',
+          meetingLink: s.meeting_link || ''
         };
       });
 
@@ -559,6 +561,7 @@ export default function App() {
           schedule_date: formattedDate,
           schedule_time: formattedTime,
           platform: bookingData.platform,
+          meeting_link: bookingData.meetingLink || null,
           timezone: timezone || 'UTC+08:00 – Beijing, Perth, Singapore, Manila',
           status: 'Pending'
         });

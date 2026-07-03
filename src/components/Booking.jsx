@@ -60,13 +60,24 @@ export default function Booking({ onAddBooking, onCancel, rescheduleData }) {
   const [preferredTime, setPreferredTime] = useState(rescheduleData?.rawTime ? rescheduleData.rawTime.slice(0, 5) : '');
   const [timezone, setTimezone] = useState(rescheduleData?.timezone || 'UTC+08:00 – Beijing, Perth, Singapore, Manila');
   const [platform, setPlatform] = useState(getPlatformId(rescheduleData?.platform));
+  const [meetingLink, setMeetingLink] = useState(rescheduleData?.meetingLink || '');
   const [notes, setNotes] = useState('');
+
+  const isVirtualMeeting = platform === 'google_meet' || platform === 'zoom';
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!clientName || !clientEmail || !contactNumber || !preferredDate || !preferredTime || !timezone) {
       alert('Please fill in all required fields.');
       return;
+    }
+
+    // Validate meeting link for virtual platforms
+    if (isVirtualMeeting && meetingLink) {
+      try { new URL(meetingLink); } catch {
+        alert('Please enter a valid meeting link URL.');
+        return;
+      }
     }
 
     // Check if the selected date and time are in the future
@@ -91,7 +102,8 @@ export default function Booking({ onAddBooking, onCancel, rescheduleData }) {
       preferredDate,
       preferredTime,
       timezone,
-      platform: platformLabel
+      platform: platformLabel,
+      meetingLink: isVirtualMeeting ? meetingLink.trim() : ''
     });
 
     alert(rescheduleData ? 'Appointment rescheduled successfully!' : 'Appointment booking confirmed successfully!');
@@ -233,6 +245,26 @@ export default function Booking({ onAddBooking, onCancel, rescheduleData }) {
                     <option value="messenger">Messenger Call</option>
                   </select>
                 </div>
+                {isVirtualMeeting && (
+                  <div className="form-group booking-span-full">
+                    <label className="form-label" htmlFor="book-meeting-link">
+                      {platform === 'google_meet' ? 'Google Meet Link' : 'Zoom Meeting Link'}
+                      <span style={{ color: 'var(--color-on-surface-variant)', fontWeight: 400, marginLeft: 6 }}>(Optional)</span>
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <span className="material-symbols-outlined" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-on-surface-variant)', fontSize: '18px', pointerEvents: 'none' }}>link</span>
+                      <input
+                        id="book-meeting-link"
+                        type="url"
+                        className="form-input"
+                        style={{ paddingLeft: '38px' }}
+                        placeholder={platform === 'google_meet' ? 'https://meet.google.com/xxx-xxxx-xxx' : 'https://zoom.us/j/xxxxxxxxxx'}
+                        value={meetingLink}
+                        onChange={(e) => setMeetingLink(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

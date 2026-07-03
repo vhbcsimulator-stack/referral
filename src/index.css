@@ -2709,7 +2709,68 @@ button, input, select, textarea {
   margin-top: 2px;
 }
 
-/* Pipeline Widget styling */
+/* Meeting Link Row */
+.client-meeting-link-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--color-surface-variant, rgba(255,255,255,0.05));
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 10px;
+  flex-wrap: wrap;
+}
+.client-meeting-link-url {
+  flex: 1;
+  font-size: 13px;
+  color: var(--color-primary);
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.client-meeting-link-url:hover {
+  text-decoration: underline;
+}
+.client-meeting-link-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.meeting-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: all 0.18s ease;
+  line-height: 1;
+}
+.meeting-link-btn.copy-btn {
+  background: var(--color-surface-container-high, rgba(255,255,255,0.1));
+  color: var(--color-on-surface);
+  border: 1px solid var(--color-outline-variant);
+}
+.meeting-link-btn.copy-btn:hover {
+  background: var(--color-surface-container-highest, rgba(255,255,255,0.18));
+}
+.meeting-link-btn.join-btn {
+  background: var(--color-primary);
+  color: var(--color-on-primary, #fff);
+}
+.meeting-link-btn.join-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+
 .pipeline-widget {
   padding: 24px;
 }

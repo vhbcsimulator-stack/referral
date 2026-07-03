@@ -2,6 +2,14 @@ import React, { useState } from 'react';
 
 export default function Tracking({ clients }) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [copiedId, setCopiedId] = useState(null);
+
+  const handleCopyLink = (id, link) => {
+    navigator.clipboard.writeText(link).then(() => {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    });
+  };
 
   const formatClientScheduleDate = (dateStr) => {
     if (!dateStr) return '';
@@ -105,6 +113,45 @@ export default function Tracking({ clients }) {
                     </p>
                   </div>
                 </div>
+
+                {/* Meeting Link Section for Google Meet / Zoom */}
+                {client.meetingLink && (client.platform === 'Google Meet' || client.platform === 'Zoom') && (
+                  <div className="client-meeting-link-row">
+                    <span className="material-symbols-outlined" style={{ color: client.platform === 'Google Meet' ? '#34a853' : '#2d8cff', flexShrink: 0 }}>
+                      {client.platform === 'Google Meet' ? 'duo' : 'videocam'}
+                    </span>
+                    <a
+                      href={client.meetingLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="client-meeting-link-url"
+                      title={client.meetingLink}
+                    >
+                      {client.meetingLink}
+                    </a>
+                    <div className="client-meeting-link-actions">
+                      <button
+                        className="meeting-link-btn copy-btn"
+                        onClick={() => handleCopyLink(client.id, client.meetingLink)}
+                        title="Copy link"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                          {copiedId === client.id ? 'check' : 'content_copy'}
+                        </span>
+                        <span>{copiedId === client.id ? 'Copied!' : 'Copy Link'}</span>
+                      </button>
+                      <a
+                        href={client.meetingLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="meeting-link-btn join-btn"
+                      >
+                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>open_in_new</span>
+                        <span>Join Meeting</span>
+                      </a>
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           ) : (
