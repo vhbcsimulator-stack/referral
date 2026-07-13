@@ -140,7 +140,7 @@ export default function App() {
         id: s.id,
         name: s.client_name,
         action: `${s.status} referral booking via ${s.platform}`,
-        value: ['closed sale', 'closed', 'sold', 'reserved'].includes((s.status || '').toLowerCase().trim()) ? 1000 : 0,
+        value: ['closed sale with cts', 'closed', 'sold', 'reserved'].includes((s.status || '').toLowerCase().trim()) ? 1000 : 0,
         status: s.status === 'Approved' ? 'For Tripping' : s.status,
         time: formatRelativeTime(s.created_at),
         avatar: ''
@@ -196,7 +196,7 @@ export default function App() {
       // 6. Map schedules to transactions
       const mappedTxs = safeSchedules.map(s => {
         const statusLower = (s.status || '').toLowerCase().trim();
-        const isCleared = ['closed sale', 'closed', 'sold', 'reserved'].includes(statusLower);
+        const isCleared = ['closed sale with cts', 'closed', 'sold', 'reserved'].includes(statusLower);
         const isCancelled = statusLower === 'cancelled';
         return {
           id: s.id,
@@ -214,7 +214,7 @@ export default function App() {
       let calculatedPending = 0.0;
       for (const s of safeSchedules) {
         const statusLower = (s.status || '').toLowerCase().trim();
-        if (['closed sale', 'closed', 'sold', 'reserved'].includes(statusLower)) {
+        if (['closed sale with cts', 'closed', 'sold', 'reserved'].includes(statusLower)) {
           calculatedTotal += 1000.0;
         } else if (!statusLower.includes('cancel')) {
           calculatedPending += 1000.0;
@@ -631,10 +631,10 @@ export default function App() {
   const pendingValue = pendingEarningsFromDb;
   const activeReferralsCount = appointments.filter(a => {
     const statusLower = (a.status || '').toLowerCase().trim();
-    return !['cancelled', 'closed sale', 'closed', 'sold', 'cleared'].includes(statusLower);
+    return !['cancelled', 'closed sale', 'closed sale with cts', 'closed', 'sold', 'cleared'].includes(statusLower);
   }).length;
   const conversionRate = appointments.length > 0
-    ? Math.round((appointments.filter(a => ['closed sale', 'closed', 'sold', 'reserved', 'converted', 'cleared'].includes((a.status || '').toLowerCase().trim())).length / appointments.length) * 100)
+    ? Math.round((appointments.filter(a => ['closed sale', 'closed sale with cts', 'closed', 'sold', 'reserved', 'converted', 'cleared'].includes((a.status || '').toLowerCase().trim())).length / appointments.length) * 100)
     : 0;
 
 
@@ -664,7 +664,7 @@ export default function App() {
     .filter(appt => {
       const isUpcoming = getApptDateTime(appt.date, appt.rawTime) >= todayStart;
       const statusLower = (appt.status || '').toLowerCase().trim();
-      const isClosed = ['closed sale', 'closed', 'sold', 'reserved', 'converted', 'cleared'].includes(statusLower);
+      const isClosed = ['closed sale', 'closed sale with cts', 'closed', 'sold', 'reserved', 'converted', 'cleared'].includes(statusLower);
       return isUpcoming && !isClosed;
     })
     .sort((a, b) => getApptDateTime(a.date, a.rawTime) - getApptDateTime(b.date, b.rawTime))
@@ -834,7 +834,7 @@ export default function App() {
                     appointments={upcomingAppointments.slice(0, 2)}
                     onViewSchedule={() => setCurrentRoute('schedule')}
                   />
-                  <RewardsBanner onLearnMore={() => alert('Referral rewards: earn $1,000 commission for every successful referral!')} />
+                  <RewardsBanner onLearnMore={() => window.open('/landing/info/index.html', '_blank')} />
                 </div>
               </section>
             </>

@@ -44,7 +44,7 @@ export default function Earnings({ earningsValue, pendingValue, transactions }) 
             </p>
           </div>
           <p className="earnings-pending-desc">
-            Expected release upon reaching 30% of referred client payment.
+            Expected release upon client signing CTS and 50% of client payment.
           </p>
         </div>
       </div>

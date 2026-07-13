@@ -34,7 +34,7 @@ export default function Tracking({ clients }) {
   // Calculate Pipeline Summary values (real data)
   const getStatusLower = (status) => (status || '').toLowerCase().trim();
 
-  const closedCount = clients.filter(c => getStatusLower(c.status) === 'closed sale').length;
+  const closedCount = clients.filter(c => ['closed sale', 'closed sale with cts'].includes(getStatusLower(c.status))).length;
   const inProgressCount = clients.filter(c => ['done tripping', 'reserved', 'reschedule'].includes(getStatusLower(c.status))).length;
   const initialCount = clients.filter(c => getStatusLower(c.status) === 'for tripping').length;
   const notInterestedCount = clients.filter(c => getStatusLower(c.status) === 'cancelled').length;
@@ -84,7 +84,7 @@ export default function Tracking({ clients }) {
                       <p className="client-card-date">Referred on {client.date || 'Oct 23, 2023'}</p>
                     </div>
                   </div>
-                  <span className={`chip chip-${client.status.toLowerCase().replace(' ', '-')} client-card-status-badge`}>
+                  <span className={`chip chip-${client.status.toLowerCase().replace(/\s+/g, '-')} client-card-status-badge`}>
                     {client.status}
                   </span>
                 </div>

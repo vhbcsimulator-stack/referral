@@ -101,7 +101,7 @@ export default function Schedule({ appointments, onConfirmAppointment, onCancelA
     .filter(appt => {
       const isUpcoming = getApptDateTime(appt.date, appt.rawTime) >= todayStart;
       const statusLower = (appt.status || '').toLowerCase().trim();
-      const isClosed = ['closed sale', 'closed', 'sold', 'reserved', 'converted', 'cleared'].includes(statusLower);
+      const isClosed = ['closed sale', 'closed sale with cts', 'closed', 'sold', 'reserved', 'converted', 'cleared'].includes(statusLower);
       return isUpcoming && !isClosed;
     })
     .sort((a, b) => getApptDateTime(a.date, a.rawTime) - getApptDateTime(b.date, b.rawTime));
@@ -258,7 +258,7 @@ export default function Schedule({ appointments, onConfirmAppointment, onCancelA
                     <div style={{ fontSize: '12px', opacity: 0.8, marginTop: '4px', fontWeight: '500', color: 'var(--color-primary, #6750a4)' }}>
                       {formatApptDate(appt.date)}
                     </div>
-                    <span className={`chip chip-${appt.status.toLowerCase().replace(' ', '-')} event-time-badge-mobile`}>
+                    <span className={`chip chip-${appt.status.toLowerCase().replace(/\s+/g, '-')} event-time-badge-mobile`}>
                       {appt.status}
                     </span>
                   </div>
@@ -281,7 +281,7 @@ export default function Schedule({ appointments, onConfirmAppointment, onCancelA
                           </p>
                         )}
                       </div>
-                      <span className={`chip chip-${appt.status.toLowerCase().replace(' ', '-')} event-badge-desktop`}>
+                      <span className={`chip chip-${appt.status.toLowerCase().replace(/\s+/g, '-')} event-badge-desktop`}>
                         {appt.status}
                       </span>
                     </div>
@@ -433,7 +433,7 @@ export default function Schedule({ appointments, onConfirmAppointment, onCancelA
               <div>
                 <h4 style={{ fontSize: '18px', fontWeight: '600', margin: 0, color: 'var(--color-on-surface, #1d1b20)' }}>{selectedClient.clientName}</h4>
                 <span 
-                  className={`chip chip-${selectedClient.status.toLowerCase().replace(' ', '-')}`}
+                  className={`chip chip-${selectedClient.status.toLowerCase().replace(/\s+/g, '-')}`}
                   style={{ marginTop: '6px', display: 'inline-block' }}
                 >
                   {selectedClient.status}

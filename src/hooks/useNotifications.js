@@ -113,7 +113,7 @@ export function useNotifications(userId) {
             let icon = 'info';
             let type = 'status_change';
 
-            if (['closed sale', 'closed', 'sold', 'reserved'].includes(status.toLowerCase())) {
+            if (['closed sale', 'closed sale with cts', 'closed', 'sold', 'reserved'].includes(status.toLowerCase())) {
               icon = 'check_circle';
               type = 'booking_closed';
             } else if (status.toLowerCase() === 'cancelled') {

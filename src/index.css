@@ -261,7 +261,7 @@ button, input, select, textarea {
   color: var(--color-secondary);
 }
 
-.chip-converted, .chip-closed-sale {
+.chip-converted, .chip-closed-sale, .chip-closed-sale-with-cts {
   background-color: #e8f5e9;
   color: #2e7d32;
   border: 1px solid rgba(46, 125, 50, 0.2);

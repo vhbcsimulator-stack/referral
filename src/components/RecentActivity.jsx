@@ -26,7 +26,7 @@ export default function RecentActivity({ activities, onClearSearch }) {
                 <p className="activity-action">{item.action}</p>
               </div>
               <div className="activity-meta">
-                <span className={`chip chip-${item.status.toLowerCase().replace(' ', '-')}`}>
+                <span className={`chip chip-${item.status.toLowerCase().replace(/\s+/g, '-')}`}>
                   {item.status}
                 </span>
                 <p className="activity-time">{item.time}</p>
