@@ -1,10 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/landing", "destination": "/landing/index.html" },
     { "source": "/info", "destination": "/landing/info/index.html" },
-    { "source": "/landing/(.*)", "destination": "/landing/$1" },
-    { "source": "/info/(.*)", "destination": "/info/$1" },
-    { "source": "/:path((?!landing|info|assets|logo\\.jpeg)[^.]*)", "destination": "/index.html" }
+    { "source": "/:path([^.]*)", "destination": "/index.html" }
   ]
 }
