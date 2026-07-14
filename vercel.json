@@ -5,6 +5,6 @@
     { "source": "/info", "destination": "/landing/info/index.html" },
     { "source": "/landing/(.*)", "destination": "/landing/$1" },
     { "source": "/info/(.*)", "destination": "/info/$1" },
-    { "source": "/((?!landing|info|assets|logo\\.jpeg).*|[^.]*)", "destination": "/index.html" }
+    { "source": "/:path((?!landing|info|assets|logo\\.jpeg)[^.]*)", "destination": "/index.html" }
   ]
 }
