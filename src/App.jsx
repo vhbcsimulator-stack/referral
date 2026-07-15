@@ -27,10 +27,11 @@ import Profile from './components/Profile';
 import Support from './components/Support';
 import EmailConfirmed from './components/EmailConfirmed';
 import ResetPassword from './components/ResetPassword';
+import GiftCheque from './components/GiftCheque';
 
 const getPathRoute = () => {
   const path = window.location.pathname.replace(/^\/|\/$/g, '');
-  const validRoutes = ['signin', 'signup', 'dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support', 'email-confirmed', 'reset-password'];
+  const validRoutes = ['signin', 'signup', 'dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support', 'email-confirmed', 'reset-password', 'gift-cheque'];
   return validRoutes.includes(path) ? path : '';
 };
 
@@ -676,8 +677,13 @@ export default function App() {
   // --- Router Render Options ---
 
   // Show /email-confirmed immediately — never wait for auth or redirect
-  if (getPathRoute() === 'email-confirmed' || currentRoute === 'email-confirmed') {
+  if (currentRoute === 'email-confirmed') {
     return <EmailConfirmed onNavigate={setCurrentRoute} />;
+  }
+
+  // Show /gift-cheque immediately — public route
+  if (currentRoute === 'gift-cheque') {
+    return <GiftCheque onNavigate={isLoggedIn ? setCurrentRoute : null} userId={userId} />;
   }
 
   // Show /reset-password immediately when triggered by Supabase recovery link

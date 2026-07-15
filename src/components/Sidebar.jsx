@@ -8,6 +8,7 @@ export default function Sidebar({ activeTab, setActiveTab, onNewReferralClick, i
     { id: 'tracking', name: 'Tracking', icon: 'group' },
     { id: 'projects', name: 'Projects', icon: 'photo_library' },
     { id: 'mechanics', name: 'Mechanics', icon: 'info' },
+    { id: 'gift-cheque', name: 'View Digital Gift Cheque', icon: 'redeem' },
     { id: 'settings', name: 'Settings', icon: 'settings' },
   ];
 

@@ -70,29 +70,28 @@ export default function SignUp({ onRegister, onNavigate }) {
       alert('Passwords do not match.');
       return;
     }
-    if (!selectedFile) {
-      alert('Please upload your Verification ID.');
-      return;
-    }
-
     setIsLoading(true);
     try {
-      // 1. Upload ID card to Storage
-      const fileExt = selectedFile.name.split('.').pop();
-      const storageFileName = `${Date.now()}.${fileExt}`;
-      const filePath = `ids/${storageFileName}`;
+      let idCardUrl = null;
 
-      const { error: uploadError } = await authSupabase.storage
-        .from('identification_cards')
-        .upload(filePath, selectedFile);
+      if (selectedFile) {
+        // 1. Upload ID card to Storage
+        const fileExt = selectedFile.name.split('.').pop();
+        const storageFileName = `${Date.now()}.${fileExt}`;
+        const filePath = `ids/${storageFileName}`;
 
-      if (uploadError) throw uploadError;
+        const { error: uploadError } = await authSupabase.storage
+          .from('identification_cards')
+          .upload(filePath, selectedFile);
 
-      const { data: publicUrlData } = authSupabase.storage
-        .from('identification_cards')
-        .getPublicUrl(filePath);
+        if (uploadError) throw uploadError;
 
-      const idCardUrl = publicUrlData.publicUrl;
+        const { data: publicUrlData } = authSupabase.storage
+          .from('identification_cards')
+          .getPublicUrl(filePath);
+
+        idCardUrl = publicUrlData.publicUrl;
+      }
 
       // Parse GPS coordinates
       let latitude = 14.599512;
@@ -286,7 +285,7 @@ export default function SignUp({ onRegister, onNavigate }) {
 
             {/* Upload Verification ID */}
             <div className="form-group form-full-width" style={{ marginTop: '8px' }}>
-              <label className="form-label">Upload Verification ID</label>
+              <label className="form-label">Upload Verification ID (Optional)</label>
               <div
                 className={`dropzone ${dragOver ? 'border-primary' : ''}`}
                 onDragOver={handleDragOver}
