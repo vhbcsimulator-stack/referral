@@ -2822,80 +2822,816 @@ button, input, select, textarea {
 
 /* Program Mechanics page styling */
 .mechanics-container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  gap: 40px;
+  padding: 8px 0 48px;
+}
+
+/* Header & Badges */
+.mechanics-badge-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+  border-radius: var(--rounded-full);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
 }
 .mechanics-header-title {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 16px;
+  font-size: clamp(28px, 4vw, 36px);
+  font-weight: 800;
+  color: var(--color-on-background);
+  letter-spacing: -0.5px;
+  margin-bottom: 12px;
 }
 .mechanics-header-desc {
   font-size: 16px;
   line-height: 1.6;
   color: var(--color-on-surface-variant);
-  max-width: 650px;
+  max-width: 700px;
+}
+
+.mechanics-section-header {
+  margin-bottom: 24px;
 }
 .mechanics-section-title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  margin-bottom: 32px;
+  color: var(--color-on-background);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-.mechanics-steps-grid {
+.mechanics-section-desc {
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  margin-top: 4px;
+}
+
+/* Eligibility Section */
+.eligibility-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 20px;
 }
 @media (min-width: 768px) {
-  .mechanics-steps-grid {
+  .eligibility-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-.mechanics-step-card {
+.eligibility-card {
   background-color: var(--color-surface-container-lowest);
-  border: 1px solid rgba(113, 121, 115, 0.15);
+  border: 1px solid var(--color-outline-variant);
   border-radius: var(--rounded-xl);
-  padding: 32px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
+  gap: 16px;
   box-shadow: var(--shadow-soft);
-  transition: transform var(--transition-fast);
+  transition: transform var(--transition-medium), border-color var(--transition-medium), box-shadow var(--transition-medium);
+  position: relative;
+  overflow: hidden;
 }
-.mechanics-step-card:hover {
-  transform: translateY(-4px);
+.eligibility-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-hover);
 }
-.mechanics-step-card.highlighted-step {
-  background-color: rgba(1, 45, 29, 0.03);
-  border-color: rgba(1, 45, 29, 0.15);
-}
-.mechanics-icon-circle {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--rounded-full);
-  background-color: var(--color-surface-container);
-  color: var(--color-primary);
+.eligibility-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--rounded-lg);
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.mechanics-step-card.highlighted-step .mechanics-icon-circle {
-  background-color: var(--color-primary-container);
-  color: var(--color-on-primary-container);
-}
-.mechanics-step-title {
-  font-size: 18px;
+.eligibility-card-title {
+  font-size: 16px;
   font-weight: 700;
+  color: var(--color-on-background);
 }
-.mechanics-step-desc {
-  font-size: 14px;
+.eligibility-card-desc {
+  font-size: 13.5px;
   line-height: 1.5;
   color: var(--color-on-surface-variant);
 }
+.eligibility-check-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  color: var(--color-primary);
+  background: var(--color-primary-container);
+  border-radius: var(--rounded-full);
+  padding: 2px;
+  font-size: 16px;
+}
+
+/* Interactive Stepper Layout */
+.stepper-card-wrapper {
+  background-color: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--rounded-2xl);
+  box-shadow: var(--shadow-soft);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.stepper-header-panel {
+  background-color: var(--color-surface-container-low);
+  border-bottom: 1px solid var(--color-outline-variant);
+  padding: 28px 24px;
+  position: relative;
+}
+.stepper-timeline-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+  z-index: 1;
+}
+.stepper-progress-line {
+  position: absolute;
+  top: 24px;
+  left: 5%;
+  right: 5%;
+  height: 4px;
+  background-color: var(--color-surface-container-highest);
+  z-index: -1;
+  border-radius: var(--rounded-full);
+}
+.stepper-progress-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(to right, var(--color-primary), var(--color-secondary));
+  border-radius: var(--rounded-full);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.stepper-step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  width: 100px;
+  outline: none;
+  font-family: inherit;
+}
+.stepper-step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--rounded-full);
+  background-color: var(--color-surface-container-lowest);
+  border: 3px solid var(--color-outline-variant);
+  color: var(--color-outline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-soft);
+}
+.stepper-step-node:hover .stepper-step-circle {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: scale(1.05);
+}
+.stepper-step-node.active .stepper-step-circle {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: 0 0 15px rgba(13, 122, 66, 0.35);
+  transform: scale(1.1);
+}
+.stepper-step-node.completed .stepper-step-circle {
+  background-color: var(--color-primary-container);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.stepper-step-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+  color: var(--color-outline);
+  transition: color 0.3s ease;
+  text-align: center;
+}
+.stepper-step-node.active .stepper-step-label {
+  color: var(--color-primary);
+}
+.stepper-step-node.completed .stepper-step-label {
+  color: var(--color-on-surface);
+}
+
+/* Stepper Content Panel */
+.stepper-content-body {
+  padding: 40px;
+}
+.step-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  animation: stepPaneEnter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes stepPaneEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.step-pane-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.step-pane-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-on-background);
+}
+.step-pane-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-on-surface-variant);
+  max-width: 800px;
+}
+
+/* Step 1: Teppanyaki Voucher Card */
+.gift-cheque-preview-container {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+}
+.teppanyaki-voucher-img {
+  width: 100%;
+  max-width: 480px;
+  border: 2px solid #d4af37;
+  border-radius: var(--rounded-lg);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.25), 0 5px 15px rgba(212, 175, 55, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.teppanyaki-voucher-img:hover {
+  transform: translateY(-5px) rotate(1deg);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.35), 0 8px 20px rgba(212, 175, 55, 0.25);
+}
+.teppanyaki-gift-card {
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 1.62 / 1;
+  background: radial-gradient(circle at 10% 20%, #1a3024 0%, #03150e 90%);
+  border: 2px solid #d4af37;
+  border-radius: var(--rounded-lg);
+  padding: 24px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.25), 0 5px 15px rgba(212, 175, 55, 0.15);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'Poppins', var(--font-body);
+}
+.teppanyaki-gift-card:hover {
+  transform: translateY(-5px) rotate(1deg);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.35), 0 8px 20px rgba(212, 175, 55, 0.25);
+}
+.teppanyaki-gift-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0) 45%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 55%
+  );
+  transform: rotate(45deg);
+  transition: transform 0.5s ease;
+}
+.teppanyaki-gift-card:hover::before {
+  transform: translate(50%, 50%) rotate(45deg);
+}
+.gift-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 1;
+}
+.gift-card-brand {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #d4af37;
+  text-transform: uppercase;
+}
+.gift-card-voucher-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: #fff;
+  margin-top: 4px;
+}
+.gift-card-logo-placeholder {
+  font-size: 24px;
+  color: #d4af37;
+}
+.gift-card-middle {
+  text-align: center;
+  z-index: 1;
+}
+.gift-card-value-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 2px;
+}
+.gift-card-value {
+  font-size: 38px;
+  font-weight: 900;
+  color: #d4af37;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: -1px;
+}
+.gift-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-top: 1px dashed rgba(212, 175, 55, 0.3);
+  padding-top: 12px;
+  z-index: 1;
+}
+.gift-card-perk {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.3;
+}
+.gift-card-perk-sub {
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+.gift-card-seal {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--rounded-full);
+  border: 1px solid #d4af37;
+  background-color: rgba(212, 175, 55, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af37;
+  font-size: 18px;
+  font-weight: 900;
+}
+.gift-card-details-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 8px;
+}
+@media (min-width: 768px) {
+  .gift-card-details-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.gift-card-requirement-bullet {
+  display: flex;
+  gap: 12px;
+  background-color: var(--color-surface-container-low);
+  padding: 16px;
+  border-radius: var(--rounded-lg);
+  border: 1px solid var(--color-outline-variant);
+}
+.gift-card-bullet-icon {
+  color: var(--color-primary);
+  font-size: 20px;
+}
+.gift-card-bullet-text {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-on-surface);
+}
+
+/* Step 2: Sales pipeline flowchart */
+.sales-pipeline-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+  padding: 10px 0;
+}
+@media (min-width: 992px) {
+  .sales-pipeline-flow {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+}
+.pipeline-flow-step {
+  flex: 1;
+  background-color: var(--color-surface-container-low);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--rounded-xl);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+.pipeline-flow-step:hover {
+  background-color: var(--color-surface-container-lowest);
+  border-color: var(--color-primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-soft);
+}
+.pipeline-step-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--rounded-full);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+.pipeline-step-icon-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--rounded-full);
+  background-color: var(--color-surface-container-highest);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+.pipeline-flow-step:hover .pipeline-step-icon-circle {
+  background-color: var(--color-primary-container);
+  color: var(--color-primary);
+}
+.pipeline-step-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-on-background);
+}
+.pipeline-step-desc {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--color-on-surface-variant);
+}
+.pipeline-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-outline-variant);
+}
+@media (min-width: 992px) {
+  .pipeline-connector {
+    transform: rotate(0deg);
+  }
+}
+@media (max-width: 991px) {
+  .pipeline-connector {
+    transform: rotate(90deg);
+    padding: 4px 0;
+  }
+}
+
+/* Step 3: USD Reward Card styling */
+.usd-reward-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .usd-reward-showcase {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+  }
+}
+.usd-reward-card-preview {
+  width: 100%;
+  max-width: 380px;
+  aspect-ratio: 1 / 1.15;
+  background: linear-gradient(135deg, #0f2c1f 0%, #03140e 100%);
+  border: 3px double #d4af37;
+  border-radius: var(--rounded-xl);
+  padding: 32px 24px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 0 30px rgba(13, 122, 66, 0.2);
+  position: relative;
+  overflow: hidden;
+  font-family: 'Poppins', var(--font-body);
+}
+.usd-reward-card-preview::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgba(212, 175, 55, 0.4);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.usd-reward-logo {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #d4af37;
+  text-transform: uppercase;
+}
+.usd-reward-badge-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: var(--rounded-full);
+  background: radial-gradient(circle, #256a42 0%, #0d2c18 100%);
+  border: 2px solid #d4af37;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af37;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  margin: 16px 0;
+  position: relative;
+  animation: rewardPulse 3s infinite alternate;
+}
+@keyframes rewardPulse {
+  0% { transform: scale(1); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
+  100% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4); }
+}
+.usd-reward-value {
+  font-size: 32px;
+  font-weight: 900;
+  color: #d4af37;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: -0.5px;
+}
+.usd-reward-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 4px;
+}
+.usd-reward-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.usd-reward-criteria {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 240px;
+  border-top: 1px solid rgba(212,175,55,0.2);
+  padding-top: 12px;
+}
+.usd-reward-info-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.usd-info-row {
+  display: flex;
+  gap: 16px;
+  background-color: var(--color-surface-container-low);
+  padding: 18px;
+  border-radius: var(--rounded-xl);
+  border: 1px solid var(--color-outline-variant);
+  align-items: flex-start;
+}
+.usd-info-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--rounded-lg);
+  background-color: var(--color-secondary-container);
+  color: var(--color-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.usd-info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.usd-info-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--color-on-background);
+}
+.usd-info-desc {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-on-surface-variant);
+}
+
+/* Section: Registration Requirements */
+.requirements-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .requirements-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1200px) {
+  .requirements-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+.requirement-card {
+  background-color: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--rounded-xl);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s ease;
+}
+.requirement-card:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+.requirement-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--rounded-lg);
+  background-color: var(--color-surface-container-low);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+.requirement-card:hover .requirement-icon-wrapper {
+  background-color: var(--color-primary-container);
+}
+.requirement-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.requirement-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-on-background);
+}
+.requirement-note {
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+}
+
+/* Accordion Styling */
+.notes-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.accordion-item {
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--rounded-xl);
+  background-color: var(--color-surface-container-lowest);
+  overflow: hidden;
+  box-shadow: var(--shadow-soft);
+  transition: border-color 0.3s ease;
+}
+.accordion-item.expanded {
+  border-color: var(--color-primary);
+}
+.accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+}
+.accordion-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.accordion-header-icon {
+  color: var(--color-primary);
+  font-size: 22px;
+}
+.accordion-header-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-on-background);
+}
+.accordion-arrow {
+  color: var(--color-outline);
+  transition: transform 0.3s ease;
+}
+.accordion-item.expanded .accordion-arrow {
+  transform: rotate(180deg);
+  color: var(--color-primary);
+}
+.accordion-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.accordion-item.expanded .accordion-body {
+  max-height: 250px;
+}
+.accordion-body-content {
+  padding: 0 24px 24px 50px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--color-on-surface-variant);
+}
+.accordion-body-content p {
+  margin: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .stepper-content-body {
+    padding: 24px 16px;
+  }
+  .stepper-step-node {
+    width: 60px;
+  }
+  .stepper-step-circle {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+    border-width: 2px;
+  }
+  .stepper-step-label {
+    font-size: 10px;
+  }
+  .teppanyaki-gift-card {
+    padding: 16px;
+  }
+  .gift-card-value {
+    font-size: 28px;
+  }
+  .accordion-header {
+    padding: 16px;
+  }
+  .accordion-body-content {
+    padding: 0 16px 16px 16px;
+  }
+}
+
 
 /* Schedule Booking Page Styling */
 .booking-form-wrapper {
