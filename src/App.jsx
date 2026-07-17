@@ -325,6 +325,8 @@ export default function App() {
         const pathRoute = getPathRoute();
         if (pathRoute === 'signup') {
           setCurrentRoute('signup');
+        } else if (pathRoute === 'gift-cheque') {
+          setCurrentRoute('gift-cheque');
         } else {
           setCurrentRoute('signin');
         }
@@ -344,7 +346,7 @@ export default function App() {
       setUserEmail(session.user.email || '');
 
       const pathRoute = getPathRoute();
-      const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
+      const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support', 'gift-cheque'];
       if (privateRoutes.includes(pathRoute)) {
         setCurrentRoute(pathRoute);
       } else {
@@ -428,7 +430,7 @@ export default function App() {
     const handlePopState = (event) => {
       const pathRoute = getPathRoute();
       if (isLoggedIn) {
-        const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support'];
+        const privateRoutes = ['dashboard', 'earnings', 'schedule', 'tracking', 'mechanics', 'booking', 'projects', 'settings', 'profile', 'support', 'gift-cheque'];
         if (privateRoutes.includes(pathRoute)) {
           setCurrentRoute(pathRoute);
         } else {
@@ -439,6 +441,8 @@ export default function App() {
           setCurrentRoute('signup');
         } else if (pathRoute === 'email-confirmed') {
           setCurrentRoute('email-confirmed');
+        } else if (pathRoute === 'gift-cheque') {
+          setCurrentRoute('gift-cheque');
         } else {
           setCurrentRoute('signin');
         }
